@@ -22,6 +22,7 @@ function Update(props) {
   const [body, setBody] = useState(props.body);
   return (
     <article>
+      <hr />
       <h2>Update</h2>
       <form onSubmit={(e) => {
         e.preventDefault();
@@ -50,6 +51,7 @@ function Update(props) {
 function Create(props) {
   return (
     <article>
+      <hr />
       <h2>Create</h2>
       <form onSubmit={(e) => {
         e.preventDefault();
@@ -74,6 +76,7 @@ function Create(props) {
 function Article(props) {
   return (
     <article>
+      <hr />
       <h2>{props.title}</h2>
       <p>{props.body}</p>
     </article>
@@ -135,10 +138,22 @@ function App() {
       }
     }
     content = <Article title={title} body={body} />
-    contextControl = <li><a href={`/update/${id}`} onClick={(e) => {
-      e.preventDefault();
-      setMode("Update");
-    }}>Update</a></li>
+    contextControl = <>
+      <li><a href={`/update/${id}`} onClick={(e) => {
+        e.preventDefault();
+        setMode("Update");
+      }}>Update</a></li>
+      <li><input type="button" value="Delete" onClick={() => {
+        const newTopics = [];
+        for(let i = 0; i < topics.length; i++){
+          if(topics[i].id !== id){
+            newTopics.push(topics[i]);
+          }
+        }
+        setTopics(newTopics);
+        setMode("Welcome");
+      }}></input></li>
+    </>
   } else if (mode === "Create") {
     content = <Create onCreate={(_title, _body) => {
       const newTopic = { id: nextId, title: _title, body: _body };
@@ -160,11 +175,14 @@ function App() {
     content = <Update title={title} body={body} onUpdate={(_title, _body) => {
       const updatedTopic = { id: id, title: _title, body: _body };
       const newTopics = [...topics];
-      for(let i = 0; i < newTopics.length; i++){
-        if(newTopics[i].id === id){
-          
+      for (let i = 0; i < newTopics.length; i++) {
+        if (newTopics[i].id === id) {
+          newTopics[i] = updatedTopic;
+          break;
         }
       }
+      setTopics(newTopics);
+      setMode("Read");
     }} />
   }
   return (
